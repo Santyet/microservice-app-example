@@ -1,24 +1,18 @@
-# Etapa 1: Compilar el proyecto con Maven
-FROM maven:3.8.5-openjdk-8 AS build
-WORKDIR /app
-COPY . .
-RUN mvn clean package -DskipTests
-
-# Etapa 2: Imagen final con el .jar
+# Usamos una imagen base liviana con JDK 8
 FROM openjdk:8-jdk-alpine
-WORKDIR /app
-COPY --from=build /app/users-api/target/*.jar app.jar
-EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
-# Etapa 1: Compilar el proyecto con Maven
-FROM maven:3.8.5-openjdk-8 AS build
-WORKDIR /app
-COPY . .
-RUN mvn clean package -DskipTests
 
-# Etapa 2: Imagen final con el .jar
-FROM openjdk:8-jdk-alpine
+# Directorio de trabajo dentro del contenedor
 WORKDIR /app
-COPY --from=build /app/users-api/target/*.jar app.jar
-EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+
+# Copiamos el JAR compilado al contenedor y lo renombramos como app.jar
+COPY target/users-api-0.0.1-SNAPSHOT.jar app.jar
+
+# Variables de entorno con valores por defecto (pueden ser sobreescritas al correr el contenedor)
+ENV JWT_SECRET=defaultsecret
+ENV SERVER_PORT=8080
+
+# Expone el puerto (opcional, útil para documentación)
+EXPOSE ${SERVER_PORT}
+
+# Comando de entrada que ejecuta la app
+ENTRYPOINT ["sh", "-c", "java -Dserver.port=$SERVER_PORT -DJWT_SECRET=$JWT_SECRET -jar app.jar"]

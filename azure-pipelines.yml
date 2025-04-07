@@ -14,7 +14,7 @@ steps:
     ls -l users-api || echo "No existe la carpeta users-api"
   displayName: '📂 Verificar estructura de carpetas'
 
-- task: Maven@4
+- task: Maven@3
   inputs:
     mavenPomFile: 'users-api/pom.xml'
     mavenOptions: '-Xmx3072m'

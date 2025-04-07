@@ -10,8 +10,13 @@ pool:
   vmImage: 'ubuntu-22.04'
 
 steps:
-- script: ls -R
-  displayName: 'Mostrar estructura de carpetas'
+- script: |
+    echo "Contenido del repo:"
+    ls -l
+    echo "Contenido de users-api:"
+    ls -l users-api || echo "No existe la carpeta users-api"
+  displayName: '📂 Verificar estructura de carpetas'
+
 - task: Maven@4
   inputs:
     mavenPomFile: 'users-api/pom.xml'
@@ -22,4 +27,3 @@ steps:
     publishJUnitResults: true
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
     goals: 'package'
-
